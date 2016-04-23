@@ -11,7 +11,3 @@ def main():
         GPIO.cleanup()
         pass
     GPIO.cleanup()
-
-if __name__ == '__main__':
-    debug("----------========== Starting session! ==========----------")
-    main()
