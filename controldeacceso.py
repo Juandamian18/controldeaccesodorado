@@ -50,8 +50,9 @@ def main():
         input = GPIO.input(4)
         if ((not prev_input) and input):
             displayController.lcd_string("Boton 1", LCD_LINE_1)
-            prev_input = input
-            time.sleep(0.05)
+            time.sleep(3)
+        prev_input = input
+        time.sleep(0.05)
 
 
 if __name__ == '__main__':
