@@ -41,12 +41,8 @@ def main():
     displayController.lcd_init()
     while True:
         displayController.lcd_string("Elija una Accion", LCD_LINE_1)
-        global displayTime
-        displayTime = True
-        # Start new thread to show curent datetime on display
-        # and wait for user input on keyboard
-        thr = thread.start_new_thread(printDateToDisplay, ())
-        displayTime = False
+        time.sleep(3)
+        printDateToDisplay()
 
 
 if __name__ == '__main__':
