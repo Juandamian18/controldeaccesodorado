@@ -23,14 +23,6 @@ def onScreen(message):
     if(VERBOSE):
         print(message)
 
-
-def main():
-    displayController.lcd_init()
-    while True:
-        displayController.lcd_string("Elija una Accion", LCD_LINE_1)
-        time.sleep(3)
-        printDateToDisplay()
-
 displayTime = False
 
 
@@ -43,6 +35,18 @@ def printDateToDisplay():
         displayController.lcd_string(timeactual, LCD_LINE_2)
         onScreen(time.strftime("%d.%m.%Y %H:%M:%S", time.localtime()))
         time.sleep(1)
+
+
+def main():
+    displayController.lcd_init()
+    while True:
+        displayController.lcd_string("Elija una Accion", LCD_LINE_1)
+        global displayTime
+        displayTime = True
+        # Start new thread to show curent datetime on display
+        # and wait for user input on keyboard
+        thr = thread.start_new_thread(printDateToDisplay, ())
+
 
 if __name__ == '__main__':
 
