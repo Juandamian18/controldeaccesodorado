@@ -39,19 +39,28 @@ def printDateToDisplay():
 
 def main():
     displayController.lcd_init()
-    prev_input = 0
+    prev_input_entrada = 0
+    prev_input_salida = 0
     while True:
         # displayController.lcd_string("Elija una Accion", LCD_LINE_1)
         # time.sleep(3)
         # printDateToDisplay()
-        displayController.lcd_string("Ingrese una Accion", LCD_LINE_1)
-        time.sleep(3)
-        input = GPIO.input(4)
-        if ((not prev_input) and input):
+        displayController.lcd_string("Elija una Accion", LCD_LINE_1)
+        inputentrada = GPIO.input(4)
+        inputsalida = GPIO.input(3)
+        # Boton ENTRADA presionado
+        if ((not prev_input_entrada) and inputentrada):
             displayController.lcd_string("ENTRADA: ", LCD_LINE_1)
             onScreen("Boton 1")
             printDateToDisplay()
-        prev_input = input
+        prev_input_entrada = inputentrada
+        time.sleep(0.05)
+        # Boton SALIDA presionado
+        if ((not prev_input_salida) and inputsalida):
+            displayController.lcd_string("SALIDA: ", LCD_LINE_1)
+            onScreen("Boton 2")
+            printDateToDisplay()
+        prev_input_salida = inputsalida
         time.sleep(0.05)
 
 

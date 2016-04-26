@@ -117,6 +117,7 @@ def lcd_init():
     GPIO.setup(LCD_D6, GPIO.OUT)  # DB6
     GPIO.setup(LCD_D7, GPIO.OUT)  # DB7
     GPIO.setup(4, GPIO.IN)
+    GPIO.setup(3, GPIO.IN)
 
     # Initialise display
     lcd_byte(0x33, LCD_CMD)  # 110011 Initialise
