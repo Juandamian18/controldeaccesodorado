@@ -15,11 +15,6 @@ LCD_LINE_1 = 0x80  # LCD RAM address for the 1st line
 LCD_LINE_2 = 0xC0  # LCD RAM address for the 2nd line
 
 
-def initGpio():
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(4, GPIO.IN)
-
-
 def debug(message):
     logging.debug(message)
 
@@ -43,7 +38,6 @@ def printDateToDisplay():
 
 
 def main():
-    initGpio()
     displayController.lcd_init()
     prev_input = 0
     while True:
