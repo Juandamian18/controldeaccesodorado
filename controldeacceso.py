@@ -44,10 +44,12 @@ def main():
         # displayController.lcd_string("Elija una Accion", LCD_LINE_1)
         # time.sleep(3)
         # printDateToDisplay()
+        displayController.lcd_string("Ingrese una Accion", LCD_LINE_1)
         input = GPIO.input(4)
         if ((not prev_input) and input):
-            displayController.lcd_string("Boton 1", LCD_LINE_1)
+            displayController.lcd_string("ENTRADA: ", LCD_LINE_1)
             onScreen("Boton 1")
+            printDateToDisplay()
             time.sleep(3)
         prev_input = input
         time.sleep(0.05)
