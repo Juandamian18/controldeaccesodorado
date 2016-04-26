@@ -29,6 +29,7 @@ def main():
     while True:
         displayController.lcd_string("Rasbperry Pi", LCD_LINE_1)
         time.sleep(3)
+        printDateToDisplay()
 
 displayTime = False
 
