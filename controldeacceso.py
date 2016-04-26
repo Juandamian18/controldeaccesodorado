@@ -27,7 +27,7 @@ def onScreen(message):
 def main():
     displayController.lcd_init()
     while True:
-        displayController.lcd_string("Por favor Presione un boton", LCD_LINE_1)
+        displayController.lcd_string("Presione un boton", LCD_LINE_1)
         time.sleep(3)
         printDateToDisplay()
 
