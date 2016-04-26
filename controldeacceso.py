@@ -46,6 +46,7 @@ def main():
         # Start new thread to show curent datetime on display
         # and wait for user input on keyboard
         thr = thread.start_new_thread(printDateToDisplay, ())
+        displayTime = False
 
 
 if __name__ == '__main__':
