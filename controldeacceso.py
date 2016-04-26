@@ -27,7 +27,7 @@ def onScreen(message):
 def main():
     displayController.lcd_init()
     while True:
-        displayController.lcd_string("Rasbperry Pi", LCD_LINE_1)
+        displayController.lcd_string("Por favor Presione un boton", LCD_LINE_1)
         time.sleep(3)
         printDateToDisplay()
 
@@ -51,5 +51,5 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         pass
     finally:
-        displayController.lcd_string("Goodbye!", LCD_LINE_1)
+        displayController.lcd_string("Hasta Luego!", LCD_LINE_1)
         GPIO.cleanup()
