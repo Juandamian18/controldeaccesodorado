@@ -14,6 +14,9 @@ LCD_CMD = False
 LCD_LINE_1 = 0x80  # LCD RAM address for the 1st line
 LCD_LINE_2 = 0xC0  # LCD RAM address for the 2nd line
 
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(4, GPIO.IN)  # Boton de Marcar entrada
+
 
 def debug(message):
     logging.debug(message)
@@ -39,10 +42,17 @@ def printDateToDisplay():
 
 def main():
     displayController.lcd_init()
+    prev_input = 0
     while True:
         displayController.lcd_string("Elija una Accion", LCD_LINE_1)
         time.sleep(3)
         printDateToDisplay()
+        input = GPIO.input(4)
+        if ((not prev_input) and input):
+            displayController.lcd_string("Boton 1", LCD_LINE_1)
+            prev_input = input
+            # Pequeña pausa
+            time.sleep(0.05)
 
 
 if __name__ == '__main__':
