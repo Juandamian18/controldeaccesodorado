@@ -51,7 +51,6 @@ def main():
         if ((not prev_input) and input):
             displayController.lcd_string("Boton 1", LCD_LINE_1)
             prev_input = input
-            # Pequeña pausa
             time.sleep(0.05)
 
 
