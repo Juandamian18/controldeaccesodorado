@@ -3,6 +3,7 @@ import RPi.GPIO as GPIO
 import time
 import thread
 import logging
+import mysql
 
 # Enable debug logging into log
 DEBUG = True
@@ -13,6 +14,22 @@ LCD_CMD = False
 
 LCD_LINE_1 = 0x80  # LCD RAM address for the 1st line
 LCD_LINE_2 = 0xC0  # LCD RAM address for the 2nd line
+
+
+def readNfc(action):
+    if(action == 1):
+        displayController.lcd_string("ENTRADA: ", LCD_LINE_1)
+        onScreen("Logging In...")
+        displayController.lcd_string("Acerque la Tarjeta", LCD_LINE_2)
+        mysql.insertReading(3412671, 1)
+    if(action == 2):
+        displayController.lcd_string("SALIDA: ", LCD_LINE_1)
+        onScreen("Boton 2")
+        displayController.lcd_string("Acerque la Tarjeta", LCD_LINE_2)
+        mysql.insertReading(4562721, 3)
+
+    # Sleep a little, so the information about last action on display is read
+    time.sleep(1)
 
 
 def debug(message):
@@ -29,37 +46,31 @@ displayTime = False
 def printDateToDisplay():
     while True:
         # Display current time on display, until global variable is set
-        if displayTime is True:
+        if displayTime is False:
             thread.exit()
-        timeactual = time.strftime("%d.%m. %H:%M:%S", time.localtime())
-        displayController.lcd_string(timeactual, LCD_LINE_2)
+        displayController.lcd_string(time.strftime("%d.%m. %H:%M:%S", time.localtime()), LCD_LINE_2)
         onScreen(time.strftime("%d.%m.%Y %H:%M:%S", time.localtime()))
-        time.sleep(1)
+        time.sleep(60)
 
 
 def main():
+    GPIO.cleanup()
     displayController.lcd_init()
     prev_input_entrada = 0
     prev_input_salida = 0
     while True:
-        # displayController.lcd_string("Elija una Accion", LCD_LINE_1)
-        # time.sleep(3)
-        # printDateToDisplay()
         displayController.lcd_string("Elija una Accion", LCD_LINE_1)
+        displayController.lcd_string("", LCD_LINE_2)
         inputentrada = GPIO.input(4)
         inputsalida = GPIO.input(3)
         # Boton ENTRADA presionado
         if ((not prev_input_entrada) and inputentrada):
-            displayController.lcd_string("ENTRADA: ", LCD_LINE_1)
-            onScreen("Boton 1")
-            printDateToDisplay()
+            readNfc(1)
         prev_input_entrada = inputentrada
         time.sleep(0.05)
         # Boton SALIDA presionado
         if ((not prev_input_salida) and inputsalida):
-            displayController.lcd_string("SALIDA: ", LCD_LINE_1)
-            onScreen("Boton 2")
-            printDateToDisplay()
+            readNfc(2)
         prev_input_salida = inputsalida
         time.sleep(0.05)
 
