@@ -55,7 +55,7 @@ import time
 
 # Define GPIO to LCD mapping
 LCD_RS = 15
-LCD_E = 11
+LCD_E = 26
 LCD_D4 = 7
 LCD_D5 = 18
 LCD_D6 = 16
@@ -118,6 +118,7 @@ def lcd_init():
     GPIO.setup(LCD_D7, GPIO.OUT)  # DB7
     GPIO.setup(4, GPIO.IN)
     GPIO.setup(3, GPIO.IN)
+    GPIO.setup(19, GPIO.OUT)
 
     # Initialise display
     lcd_byte(0x33, LCD_CMD)  # 110011 Initialise
