@@ -59,16 +59,17 @@ def camera_capturar(mensaje):
     camera.stop_preview()
 
 
-def readNfc1(action):
+def actionMenu(action):
     if(action == 1):
         displayController.lcd_string("ENTRADA: ", LCD_LINE_1)
         onScreen("Entrada...")
-        displayController.lcd_string("Acerque Tarjeta", LCD_LINE_2)
+        displayController.lcd_string("Pase su Tarjeta", LCD_LINE_2)
         dataRFID = readNfc()
-        displayController.lcd_string("Codigo Tarjeta:", LCD_LINE_1)
+        # displayController.lcd_string("Codigo Tarjeta:", LCD_LINE_1)
+        name = mysql.insertReading(dataRFID, Actions.entrada)
+        displayController.lcd_string(name, LCD_LINE_1)
         displayController.lcd_string(dataRFID, LCD_LINE_2)
         time.sleep(2)
-        mysql.insertReading(dataRFID, Actions.entrada)
         displayController.lcd_string("Mire a la Camara", LCD_LINE_1)
         displayController.lcd_string("", LCD_LINE_2)
         camera_capturar(time.strftime("%d-%m-%Y %H-%M-%S", time.localtime()))
@@ -78,12 +79,12 @@ def readNfc1(action):
     if(action == 2):
         displayController.lcd_string("SALIDA: ", LCD_LINE_1)
         onScreen("Salida...")
-        displayController.lcd_string("Acerque Tarjeta", LCD_LINE_2)
+        displayController.lcd_string("Pase su Tarjeta", LCD_LINE_2)
         dataRFID = readNfc()
-        displayController.lcd_string("Codigo Tarjeta:", LCD_LINE_1)
+        name = mysql.insertReading(dataRFID, Actions.salida)
+        displayController.lcd_string(name, LCD_LINE_1)
         displayController.lcd_string(dataRFID, LCD_LINE_2)
         time.sleep(2)
-        mysql.insertReading(dataRFID, Actions.salida)
         displayController.lcd_string("Mire a la Camara", LCD_LINE_1)
         displayController.lcd_string("", LCD_LINE_2)
         camera_capturar(time.strftime("%d-%m-%Y %H-%M-%S", time.localtime()))
@@ -128,12 +129,12 @@ def main():
         inputsalida = GPIO.input(3)
         # Boton ENTRADA presionado
         if ((not prev_input_entrada) and inputentrada):
-            readNfc1(1)
+            actionMenu(1)
         prev_input_entrada = inputentrada
         time.sleep(0.05)
         # Boton SALIDA presionado
         if ((not prev_input_salida) and inputsalida):
-            readNfc1(2)
+            actionMenu(2)
         prev_input_salida = inputsalida
         time.sleep(0.05)
 
