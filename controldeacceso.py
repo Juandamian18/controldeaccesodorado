@@ -6,6 +6,7 @@ import logging
 import mysql
 import picamera
 import MFRC522
+import requests
 
 
 # Enable debug logging into log
@@ -17,7 +18,10 @@ LCD_CMD = False
 
 LCD_LINE_1 = 0x80  # LCD RAM address for the 1st line
 LCD_LINE_2 = 0xC0  # LCD RAM address for the 2nd line
+
 camera = picamera.PiCamera()
+
+url = 'http://192.168.1.11/sistema-moteles/empleados'
 
 
 class Actions:
@@ -27,7 +31,10 @@ class Actions:
 
 def readNfc():
     reading = True
+    timeout = time.time() + 10
     while reading:
+        if time.time() > timeout:
+            break
         MIFAREReader = MFRC522.MFRC522()
 
         # while continue_reading:
@@ -42,6 +49,8 @@ def readNfc():
             MIFAREReader.AntennaOff()
             reading = False
             return str(backData[0]) + str(backData[1]) + str(backData[2]) + str(backData[3]) + str(backData[4])
+    # No se detecto tarjeta
+    return False
 
 
 def ledRedOn():
@@ -50,50 +59,54 @@ def ledRedOn():
 def ledRedOff():
     GPIO.output(19, False)
 
-def camera_capturar(mensaje):
+def camera_capturar():
     camera.rotation = 180
-    camera.resolution = (600, 600)
-    camera.start_preview()
-    time.sleep(1)
-    camera.capture('/home/pi/Desktop/imagen-%s.jpg' % mensaje)
-    camera.stop_preview()
+    camera.resolution = (1024, 768)
+    # camera.start_preview()
+    camera.capture('/home/pi/Desktop/captura.jpg')
+    # camera.stop_preview()
 
 
 def actionMenu(action):
     if(action == 1):
         displayController.lcd_string("ENTRADA: ", LCD_LINE_1)
         onScreen("Entrada...")
-        displayController.lcd_string("Pase su Tarjeta", LCD_LINE_2)
-        dataRFID = readNfc()
-        # displayController.lcd_string("Codigo Tarjeta:", LCD_LINE_1)
-        name = mysql.insertReading(dataRFID, Actions.entrada)
-        displayController.lcd_string(name, LCD_LINE_1)
-        displayController.lcd_string(dataRFID, LCD_LINE_2)
-        time.sleep(2)
-        displayController.lcd_string("Mire a la Camara", LCD_LINE_1)
-        displayController.lcd_string("", LCD_LINE_2)
-        camera_capturar(time.strftime("%d-%m-%Y %H-%M-%S", time.localtime()))
-        displayController.lcd_string("Ingreso Exitoso!", LCD_LINE_1)
-        displayController.lcd_string("", LCD_LINE_2)
-        time.sleep(2)
-    if(action == 2):
+    else:
         displayController.lcd_string("SALIDA: ", LCD_LINE_1)
         onScreen("Salida...")
-        displayController.lcd_string("Pase su Tarjeta", LCD_LINE_2)
-        dataRFID = readNfc()
-        name = mysql.insertReading(dataRFID, Actions.salida)
-        displayController.lcd_string(name, LCD_LINE_1)
-        displayController.lcd_string(dataRFID, LCD_LINE_2)
-        time.sleep(2)
+
+    displayController.lcd_string("Pase su Tarjeta", LCD_LINE_2)
+    dataRFID = readNfc()
+    if (dataRFID==False):
+        return False
+    # displayController.lcd_string("Codigo Tarjeta:", LCD_LINE_1)
+    # name = mysql.insertReading(dataRFID, Actions.entrada)
+    displayController.lcd_string("Espere", LCD_LINE_1)
+    displayController.lcd_string("", LCD_LINE_2)
+    r = requests.post(url + "/verificar_tarjeta", data = {'tarjeta': dataRFID })
+    # displayController.lcd_string(name, LCD_LINE_1)
+    if (r.text == "1"):
+        # displayController.lcd_string(dataRFID, LCD_LINE_2)
+        # time.sleep(2)
         displayController.lcd_string("Mire a la Camara", LCD_LINE_1)
         displayController.lcd_string("", LCD_LINE_2)
-        camera_capturar(time.strftime("%d-%m-%Y %H-%M-%S", time.localtime()))
-        displayController.lcd_string("Ingreso Exitoso!", LCD_LINE_1)
+        camera_capturar()
+        displayController.lcd_string("Espere", LCD_LINE_1)
         displayController.lcd_string("", LCD_LINE_2)
+        files = {'captura': open('/home/pi/Desktop/captura.jpg', 'rb')}
+        r = requests.post(url + "/entrada_salida_usuario",data = {'tarjeta': dataRFID, 'accion':action }, files=files)
+        if(action == 1):
+            displayController.lcd_string("Ingreso Exitoso!", LCD_LINE_1)
+        else:
+            displayController.lcd_string("Salida Exitosa!", LCD_LINE_1)
+        displayController.lcd_string(r.text, LCD_LINE_2)
         time.sleep(2)
+    else:
+        displayController.lcd_string("Tarjeta Invalida", LCD_LINE_1)
+        displayController.lcd_string("", LCD_LINE_2)
 
     # Sleep a little, so the information about last action on display is read
-    time.sleep(1)
+    time.sleep(2)
 
 
 def debug(message):
